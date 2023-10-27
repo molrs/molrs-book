@@ -3,18 +3,19 @@ There have been many SMILES parsers written over the years. The approaches range
 
 The approach taken by molrs-core is hopefully a middle ground between lower-level, unreadable magic and higher-level approaches with more abstraction.
 
-We also try to minimize the number of classes we'd have to write. We could have a `SmilesAtom` class and an `Atom` class, one for holding raw data out of a SMILES string and one for holding all the data related to an atom post-perception. However, we can avoid this with deliberate use of Rust's Option enum.
-
-We will implement SMILES parsing as the FromStr trait for our Molecule class.
+See the OpenSMILES specification for more details on SMILES. Note that molrs intentionally does not implement some aspects of the OpenSMILES specification.
 
 ## SMILES Syntax
-In SMILES syntax, there are only really 4 actions that need to be handled:
+In SMILES syntax, there are only really five actions that need to be handled:
 - Add a new atom.
     - Common elements can be specified without a bracket.
     - Uncommon elements or atoms with attributes need a bracket.
 - Add a new bond.
 - Edit the bond order of the next bond.
+- Manage the root atoms of branches.
 - Add ring closures.
+
+Handling all five simultaneously in a single pass through the SMILES string ends up looking pretty complicated. So, we will break it down as much as we can. This will (1) convince me I wrote this function correctly (I've rewritten this function three times already...) and (2) help newcomers understand how molrs parses SMILES strings.
 
 We will start with a parser for a minimal SMILES syntax, and work our way up. You can find all the code here, [smiles-parsing](https://github.com/molrs/smiles-parsing).
 
@@ -89,19 +90,24 @@ Atom {
 },
 ```
 
+It works! But what if we want more than this limited set of atoms?
+
 ### Single Atom, With Brackets
-While we can read a limited set of elements, we really want to be able to read all elements. For elements beyond the small set listed above, it's necessary to introduce bracket syntax. For a deeper dive on SMILES syntax, I recommend reading the OpenSMILES standard.
+For elements beyond the small set listed above, it's necessary to introduce bracket syntax. For a deeper dive on bracket syntax, I recommend reading the OpenSMILES standard.
 
 Let's expand our parser to allow bracket atoms. Here's v2:
 ```rust
 fn smiles_parser_v2(smi: &str) -> Result<Molecule, MoleculeError> {
     let mut atoms: Vec<Atom> = vec![];
 
+    // *** NEW CODE BEGINS ***
     let mut c_is_in_bracket: bool = false;
     let mut atom_attribute: AtomAttribute = AtomAttribute::Isotope;
     let mut element_str: String = String::new();
+    // *** NEW CODE ENDS ***
 
     for c in smi.chars() {
+        // *** NEW CODE BEGINS ***
         if c_is_in_bracket {
             let atom: &mut Atom = atoms.last_mut().unwrap();
             if c == ']' {
@@ -168,6 +174,7 @@ fn smiles_parser_v2(smi: &str) -> Result<Molecule, MoleculeError> {
             c_is_in_bracket = true;
             atom_attribute = AtomAttribute::Isotope;
             atoms.push(Atom::default());
+        // *** NEW CODE ENDS ***
         } else if c == 'B'
             || c == 'C'
             || c == 'N'
@@ -206,11 +213,16 @@ fn smiles_parser_v2(smi: &str) -> Result<Molecule, MoleculeError> {
 }
 ```
 
-As you can see, our code is getting a little ... spaghetti-like. There are two main points of complication that we had to handle:
+As you can see, our code is getting a little more complicated. There are two main points of complication that we had to handle:
 - Handle chars inside a bracket and outside a bracket differently.
 - Handle all the different atom attributes specifiable by bracket syntax.
+    - Element
+    - Isotope
+    - Charge
+    - Number of hydrogens
+    - Chirality
 
-However, it works as expected. Using this function to parse "[18OH-]" gives a Molecule with no bonds, and one atom:
+Using this function to parse "[18OH-]" gives a Molecule with no bonds, and one atom:
 ```
 Atom {
     element: O,
@@ -233,6 +245,7 @@ It's nice to read single atoms but chemistry is all about bonding. SMILES has th
 - branched bonds.
 - ring-closing bonds.
 
-Let's start with the simplest, linear bonds.
+Let's start with the simplest, linear bonds. Here's v3:
+```rust
 
-
+```
