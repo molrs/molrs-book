@@ -12,7 +12,7 @@ In SMILES syntax, there are only really five actions that need to be handled:
     - Uncommon elements or atoms with attributes need a bracket.
 - Add a new bond.
 - Edit the bond order of the next bond.
-- Manage the root atoms of branches.
+- Manage the root atoms for branches.
 - Add ring closures.
 
 Handling all five simultaneously in a single pass through the SMILES string ends up looking pretty complicated. So, we will break it down as much as we can. This will (1) convince me I wrote this function correctly (I've rewritten this function three times already...) and (2) help newcomers understand how molrs parses SMILES strings.
@@ -414,7 +414,7 @@ Let's now move on to branching.
 
 ### Branches
 
-I would say branching was the most difficult aspect of SMILES to get right. Instead of just using a simple counter, you need to keep track of where the root atom (the i-th atom) of the next bond should be. We can do this using a stack!
+I would say branching was the most difficult aspect of SMILES to get right. Instead of just using a simple counter, you need to keep track of where the root atom of the next bond should be. We can do this using a stack!
 
 ```rust
 fn smiles_parser_v4(smi: &str) -> Result<Molecule, MoleculeError> {
@@ -603,10 +603,12 @@ i = 5, c = ')':
 i = 6, c = 'C':
     stack = [1]
     consume 1 and push bond 1-4
+    push 4 to stack
     stack = [4]
 ```
 
 Here are some example molecules:
+
 smi = "CC(=O)C", simple branching
 ```
 Bond {
@@ -684,7 +686,7 @@ And there you have it, we can handle branched SMILES.
 ### Ring Closures
 Finally we come to ring closures. Interestingly, ring closing is the only part of SMILES that isn't linear. When the first atom is marked as a ring-closing atom, you are making a promise to come back later and close it. Then when the second, matching atom is found, you need to connect them together.
 
-Here is an implementation of ring closures. Note that OpenSMILES allows double-digit ring indexes with the '%' char marking double-digit ring indexes. In this minimal version, we leave it out.
+Here is an implementation of ring closures. Note that OpenSMILES allows double-digit ring indexes with the '%' char marking double-digit ring indexes. In this minimal version, we don't handle the % character.
 
 ```rust
 fn smiles_parser_v5(smi: &str) -> Result<Molecule, MoleculeError> {
@@ -842,7 +844,7 @@ fn smiles_parser_v5(smi: &str) -> Result<Molecule, MoleculeError> {
 }
 ```
 
-We just need to keep track of ring closure indexes. For this, we use a HashMap (like a dict in Python) where the keys are ring-closure indexes and the values are atom indices.
+To close rings correctly, we need to keep track of ring-closure indexes. For this, we use a HashMap (like a dict in Python) where the keys are ring-closure indexes and the values are atom indices. If the hashmap doesn't contain the ring-closure index, we add it. If the hashmap does contain the ring-closure index, we extract the atom index for the root of the ring bond and push a new ring-closing bond.
 
 For "C1CC1", we get:
 ```
