@@ -18,7 +18,7 @@ Atoms: [
 Bonds: [
     Bond {
         i: 0,
-        j: 0,
+        j: 1,
         bond_type: Default,
     }
 ]
