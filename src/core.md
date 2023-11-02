@@ -6,3 +6,5 @@ To that end, molrs-core is a very simple toolkit focused on three representation
 - Molecule <-> SMILES
 - Substructures <- SMARTS
 - Transformations <- SMIRKS
+
+Note the difference in the arrows. The toolkit supports reading and writing SMILES but only reading SMARTS and SMIRKS.

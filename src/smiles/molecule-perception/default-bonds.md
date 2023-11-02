@@ -1,9 +1,9 @@
 # Default Bonds
-SMILES doesn't explicitly provide bond types for single bonds and aromatic bonds. Thankfully, we can simply resolve default bonds. SMILES atoms do explicitly label if they are aromatic or not so we can use these labels to label a bond as single or aromatic.
+SMILES doesn't explicitly provide bond types for single bonds and aromatic bonds. Thankfully, we can easily resolve default bonds. SMILES atoms do explicitly label if they are aromatic or not so we can use these labels to label a bond as single or aromatic.
 
-Note that molrs doesn't like using the label "aromatic". There examples of 4n + 2 pi systems that aren't aromatic. The word "aromatic" is way too loaded and so I prefer the less loaded term "delocalized".
+Note that molrs doesn't like using the label "aromatic". There are examples of 4n + 2 pi systems that aren't aromatic. The word "aromatic" is way too loaded and so I prefer the less loaded term "delocalized".
 
-While we will make a different error of assuming 4n pi systems are delocalized (ie. cyclobutadiene), these kinds of systems do shift double bonds around through valence isomerization. For example, this [cyclobutadiene system](https://doi.org/10.1002/anie.199207381) has a valence isomerization barrier of 5.8 kcal/mol.
+We will not make any effort to compute aromaticity. This does lead to the error of assuming 4n pi systems are delocalized (ie. cyclobutadiene). However, these kinds of systems do shift double bonds around through valence isomerization. For example, this [cyclobutadiene system](https://doi.org/10.1002/anie.199207381) has a valence isomerization barrier of 5.8 kcal/mol.
 
 Ultimately, we will not be able to accurately label molecules as "aromatic" or "delocalized" without QM methods. So we will have to settle for different degrees of "wrongness".
 

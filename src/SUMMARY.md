@@ -10,3 +10,8 @@
             - [Rings](smiles/molecule-perception/rings.md)
             - [Implicit Hydrogens](smiles/molecule-perception/implicit-hydrogens.md)
         - [Writing SMILES](smiles/writing-smiles.md)
+    - [Functions](functions.md)
+        - [Kekulization](functions/kekulization.md)
+        - [Delocalization](functions/delocalized.md)
+        - [Maximum Allowed Valence](functions/maximum-allowed-valence.md)
+        
