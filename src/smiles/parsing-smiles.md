@@ -686,7 +686,7 @@ And there you have it, we can handle branched SMILES.
 ### Ring Closures
 Finally we come to ring closures. Interestingly, ring closing is the only part of SMILES that isn't linear. When the first atom is marked as a ring-closing atom, you are making a promise to come back later and close it. Then when the second, matching atom is found, you need to connect them together.
 
-Here is an implementation of ring closures. Note that OpenSMILES allows double-digit ring indexes with the '%' char marking double-digit ring indexes. In this minimal version, we don't handle the % character.
+Here is an implementation of ring closures. Note that OpenSMILES allows double-digit ring indexes with the '%' char marking double-digit ring indexes. In this minimal version, we don't handle the % character. However, molrs does handle double-digi ring indexes.
 
 ```rust
 fn smiles_parser_v5(smi: &str) -> Result<Molecule, MoleculeError> {
