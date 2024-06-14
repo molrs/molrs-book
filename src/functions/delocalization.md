@@ -1,5 +1,5 @@
 # Delocalization
-
+In contrast to kekulization, delocalization is not too difficult.
 
 ```rust
 pub fn delocalized(&self) -> Molecule {
@@ -27,3 +27,8 @@ pub fn delocalized(&self) -> Molecule {
     mol
 }
 ```
+
+First we find all rings that can be delocalized. Then we iterate through these rings and:
+1. convert single/double bonds to delocalized bonds.
+2. remove delocalized labels on atoms. 
+
