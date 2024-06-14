@@ -12,6 +12,6 @@
         - [Writing SMILES](smiles/writing-smiles.md)
     - [Functions](functions.md)
         - [Kekulization](functions/kekulization.md)
-        - [Delocalization](functions/delocalized.md)
+        - [Delocalization](functions/delocalization.md)
         - [Maximum Allowed Valence](functions/maximum-allowed-valence.md)
         
